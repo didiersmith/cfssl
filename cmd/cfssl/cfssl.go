@@ -27,6 +27,7 @@ import (
 	"github.com/cloudflare/cfssl/cli/bundle"
 	"github.com/cloudflare/cfssl/cli/gencert"
 	"github.com/cloudflare/cfssl/cli/genkey"
+	"github.com/cloudflare/cfssl/cli/scan"
 	"github.com/cloudflare/cfssl/cli/selfsign"
 	"github.com/cloudflare/cfssl/cli/serve"
 	"github.com/cloudflare/cfssl/cli/sign"
@@ -48,6 +49,7 @@ func main() {
 		"genkey":   genkey.Command,
 		"gencert":  gencert.Command,
 		"selfsign": selfsign.Command,
+		"scan":     scan.Command,
 	}
 	// Register all command flags.
 	cli.Start(cmds)

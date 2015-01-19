@@ -66,6 +66,9 @@ type Config struct {
 	IP                string
 	Remote            string
 	Label             string
+	List              bool
+	Family            string
+	Scanner           string
 }
 
 // Parsed command name
