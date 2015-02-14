@@ -138,4 +138,5 @@ var AllFamilies = []*Family{
 	TLSHandshake,
 	TLSSession,
 	HTTPS,
+	PKI,
 }

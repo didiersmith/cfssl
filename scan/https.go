@@ -5,9 +5,11 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
-	"fmt"
 	"net"
 	"net/http"
+	"strings"
+
+	"github.com/cloudflare/cfssl/log"
 )
 
 // HTTPS contains scanners to test application layer HTTP(S) features
@@ -56,11 +58,16 @@ func hpkpScan(host string) (grade Grade, output Output, err error) {
 	if err != nil {
 		return
 	}
-	hpkp := resp.Header.Get("Public-Key-Pins")
-	fmt.Println(hpkp)
-	digest := sha256.Sum256(cert.RawSubjectPublicKeyInfo)
-	output = fingerprint(base64.StdEncoding.EncodeToString(digest[:]))
-	grade = Good
+	hpkpHeader := resp.Header.Get("Public-Key-Pins")
+	if hpkpHeader != "" {
+		log.Debug(hpkpHeader)
+		digest := sha256.Sum256(cert.RawSubjectPublicKeyInfo)
+		fing := base64.StdEncoding.EncodeToString(digest[:])
+		if strings.Contains(hpkpHeader, fing) {
+			output = fingerprint(fing)
+			grade = Good
+		}
+	}
 	return
 }
 
@@ -70,7 +77,9 @@ func hstsScan(host string) (grade Grade, output Output, err error) {
 	if err != nil {
 		return
 	}
-	if resp.Header.Get("Strict-Transport-Security") != "" {
+	hstsHeader := resp.Header.Get("Strict-Transport-Security")
+	if hstsHeader != "" {
+		log.Debug(hstsHeader)
 		grade = Good
 	}
 	return
