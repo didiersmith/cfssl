@@ -1,6 +1,7 @@
 package scan
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"time"
@@ -105,6 +106,14 @@ func (h scanHistory) store(scanner, host string, output Output) {
 	h[key] = append(h[key], output)
 }
 
+func defaultTLSConfig(host string) *tls.Config {
+	h, _, err := net.SplitHostPort(host)
+	if err != nil {
+		h = host
+	}
+	return &tls.Config{ServerName: h, InsecureSkipVerify: true}
+}
+
 // Family defines a set of related scans meant to be run together in sequence.
 type Family struct {
 	// Name is a short name for the Family.
@@ -128,4 +137,5 @@ var AllFamilies = []*Family{
 	Connectivity,
 	TLSHandshake,
 	TLSSession,
+	HTTPS,
 }
