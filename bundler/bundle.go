@@ -95,7 +95,7 @@ func (b *Bundle) MarshalJSON() ([]byte, error) {
 	if b == nil || b.Cert == nil {
 		return nil, errors.New("no certificate in bundle")
 	}
-	var keyBytes []byte
+	var keyBytes, rootBytes []byte
 	var keyLength int
 	var typeString string
 	var keyType string
@@ -128,9 +128,13 @@ func (b *Bundle) MarshalJSON() ([]byte, error) {
 	if b.Cert.CRLDistributionPoints != nil {
 		crlSupport = true
 	}
+	if b.Root != nil {
+		rootBytes = b.Root.Raw
+	}
+
 	return json.Marshal(map[string]interface{}{
 		"bundle":       chain(b.Chain),
-		"root":         pemBlockToString(&pem.Block{Type: "CERTIFICATE", Bytes: b.Root.Raw}),
+		"root":         pemBlockToString(&pem.Block{Type: "CERTIFICATE", Bytes: rootBytes}),
 		"crt":          pemBlockToString(&pem.Block{Type: "CERTIFICATE", Bytes: b.Cert.Raw}),
 		"key":          pemBlockToString(&pem.Block{Type: typeString, Bytes: keyBytes}),
 		"key_type":     keyType,
